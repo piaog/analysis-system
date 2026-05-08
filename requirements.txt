@@ -6,4 +6,4 @@ openai
 wordcloud
 matplotlib
 python-docx
-kaleido
+kaleido==0.2.1
