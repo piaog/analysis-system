@@ -12,25 +12,7 @@ import base64
 from docx import Document
 from docx.shared import Inches, Pt
 from docx.oxml.ns import qn 
-import socket
 
-# 判断是否在本地运行（通过主机名或 IP 判断）
-def is_local_env():
-    try:
-        # 如果能解析到内网特定 IP 或者主机名是你的电脑，判定为本地
-        hostname = socket.gethostname()
-        return "Local" in hostname or "Desktop" in hostname
-    except:
-        return False
-
-# 在侧边栏逻辑中使用
-with st.sidebar:
-    is_local = is_local_env()
-    # 如果是云端，默认勾选阿里云且禁止取消（或者给出提示）
-    env_type = st.toggle("🌐 切换至阿里云模式", value=not is_local)
-    
-    if not env_type and not is_local:
-        st.warning("⚠️ 检测到云端环境，无法直接访问内网模型，请切换至阿里云。")
 # ==========================================
 # 1. 页面配置与 UI 样式 (保持不变)
 # ==========================================
@@ -208,24 +190,30 @@ def get_sh_expert_analysis(df_shown, group_col, method, client, model_id, sys_pr
         return content.strip()
     except Exception as e: return f"研判引擎暂时无法连接: {e}"
 
-# ==========================================
-# 3. 侧边栏控制 (保持不变)
+
+# 3. 侧边栏控制 (已简化为纯阿里云模式)
 # ==========================================
 with st.sidebar:
     st.markdown("## 🏗️ 系统控制台")
-    env_type = st.toggle("🌐 切换至阿里云模式", value=False)
-    if env_type:
-        default_url, default_key = "https://dashscope.aliyuncs.com/compatible-mode/v1", "sk-819cb281e7c44980a4115f7698b46a1f"
-        preset_models = ["qwen-turbo","qwen-long","qwen-plus","qwen-max", "自定义"]
-    else:
-        default_url, default_key = "http://172.16.25.247:7861/v1", "weiqu"
-        preset_models = ["Qwen3.5-35B", "自定义"]
+    
+    # 彻底移除 toggle 切换，直接固定阿里云参数
+    env_type = True  # 强制设为 True，方便后面函数逻辑调用
+    
+    default_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    default_key = "sk-819cb281e7c44980a4115f7698b46a1f"
+    preset_models = ["qwen-turbo", "qwen-long", "qwen-plus", "qwen-max", "自定义"]
 
+    # 保留输入框，方便你临时更换 Key 或模型
     local_url = st.text_input("🔗 接口地址", value=default_url)
     local_key = st.text_input("🔑 API Key", value=default_key, type="password")
     selected_model = st.selectbox("🤖 选择/输入模型", options=preset_models)
+    
     model_id = st.text_input("✍️ 模型 ID", value=selected_model) if selected_model == "自定义" else selected_model
+    
+    # 初始化 OpenAI 客户端
     client = OpenAI(api_key=local_key, base_url=local_url)
+    
+    st.info("💡 当前已锁定为阿里云计算引擎，确保外网访问稳定性。")
 
 # ==========================================
 # 4. 主业务流程
