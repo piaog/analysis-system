@@ -63,19 +63,50 @@ if "custom_prompt" not in st.session_state:
 # ==========================================
 # 2. 核心工具函数 (保持不变)
 # ==========================================
+# ==========================================
+# 2. 核心工具函数 (已优化兼容云端环境)
+# ==========================================
 def get_system_font():
+    # 1. 尝试本地常见路径
     font_paths = ["C:/Windows/Fonts/msyh.ttc", "/System/Library/Fonts/PingFang.ttc",
-                  "/System/Library/Fonts/STHeiti Light.ttc", "C:/Windows/Fonts/simhei.ttf"]
+                  "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc", # Linux/Cloud 常用路径
+                  "C:/Windows/Fonts/simhei.ttf"]
     for path in font_paths:
         if os.path.exists(path): return path
+    
+    # 2. 如果是云端 Linux 环境，尝试安装并使用文泉驿微米黑
+    if os.name != 'nt': # 非 Windows 系统
+        # 这一步是万能保险：如果找不到字体，就下载一个
+        os.system("apt-get update && apt-get install -y fonts-wqy-microhei")
+        linux_font = "/usr/share/fonts/truetype/wqy/wqy-microhei.ttc"
+        if os.path.exists(linux_font): return linux_font
     return None
 
 def generate_professional_wordcloud(df, label_col, value_col):
     word_freq = dict(zip(df[label_col].astype(str), df[value_col]))
     f_path = get_system_font()
-    wc = WordCloud(font_path=f_path, width=1200, height=600, background_color='white', colormap='Blues').generate_from_frequencies(word_freq)
+    
+    # 设置 Matplotlib 默认字体（解决图表中文）
+    if f_path:
+        from matplotlib import font_manager
+        try:
+            prop = font_manager.FontProperties(fname=f_path)
+            plt.rcParams['font.sans-serif'] = [prop.get_name()]
+            plt.rcParams['axes.unicode_minus'] = False
+        except:
+            pass
+
+    wc = WordCloud(
+        font_path=f_path, 
+        width=1200, 
+        height=600, 
+        background_color='white', 
+        colormap='Blues'
+    ).generate_from_frequencies(word_freq)
+    
     fig, ax = plt.subplots(figsize=(15, 7))
-    ax.imshow(wc, interpolation='bilinear'); ax.axis("off")
+    ax.imshow(wc, interpolation='bilinear')
+    ax.axis("off")
     return fig
 
 def generate_html_report(title, items):
