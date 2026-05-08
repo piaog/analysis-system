@@ -12,7 +12,25 @@ import base64
 from docx import Document
 from docx.shared import Inches, Pt
 from docx.oxml.ns import qn 
+import socket
 
+# 判断是否在本地运行（通过主机名或 IP 判断）
+def is_local_env():
+    try:
+        # 如果能解析到内网特定 IP 或者主机名是你的电脑，判定为本地
+        hostname = socket.gethostname()
+        return "Local" in hostname or "Desktop" in hostname
+    except:
+        return False
+
+# 在侧边栏逻辑中使用
+with st.sidebar:
+    is_local = is_local_env()
+    # 如果是云端，默认勾选阿里云且禁止取消（或者给出提示）
+    env_type = st.toggle("🌐 切换至阿里云模式", value=not is_local)
+    
+    if not env_type and not is_local:
+        st.warning("⚠️ 检测到云端环境，无法直接访问内网模型，请切换至阿里云。")
 # ==========================================
 # 1. 页面配置与 UI 样式 (保持不变)
 # ==========================================
