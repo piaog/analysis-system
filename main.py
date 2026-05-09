@@ -74,18 +74,7 @@ if "custom_prompt" not in st.session_state:
 # 2. 核心工具函数 (保持不变)
 # ==========================================
 # ==========================================
-# 2. 核心工具函数 (已优化兼容云端环境)
-# ==========================================
-@st.cache_data # 告诉系统：如果文件名没变，直接从缓存读数据，别重新加载
-def load_data(file):
-    if file.name.endswith('.csv'):
-        return pd.read_csv(file)
-    return pd.read_excel(file)
 
-# 在主业务流程中使用
-if uploaded_file:
-    df_raw = load_data(uploaded_file)
-    
 def get_system_font():
     # 1. 尝试本地常见路径
     font_paths = ["C:/Windows/Fonts/msyh.ttc", "/System/Library/Fonts/PingFang.ttc",
