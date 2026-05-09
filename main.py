@@ -295,7 +295,7 @@ if uploaded_file:
 
                 c1, c2, c3, c4, c5 = st.columns([1.5, 1.2, 1, 0.8, 1.5])
                 g_by_cols = c1.multiselect("📌 统计维度(X)", current_cols, key="multi_x") if st.session_state.is_multi else [c1.selectbox("📌 统计维度(X)", current_cols, key="single_x")]
-                y_target, meth = c2.selectbox("🎯 对象(Y)", current_cols, key="y_sel"), c3.selectbox("🧮 方法", ["计数", "求和", "平均值", "中位数"], key="meth_sel")
+                y_target, meth = c2.selectbox("🎯 对象(Y)", current_cols, key="y_sel"), c3.selectbox("🧮 方法", ["计数", "求和", "平均值", "中位数","最大值","最小值"], key="meth_sel")
                 t_n = c4.number_input("Top N (0为全部)", 0, value=15)
 
                 custom_y_name = c5.text_input("🏷️ 数值名称", value=f"{y_target}-{meth}")
