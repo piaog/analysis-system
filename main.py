@@ -201,29 +201,33 @@ def get_sh_expert_analysis(df_shown, group_col, method, client, model_id, sys_pr
     except Exception as e: return f"研判引擎暂时无法连接: {e}"
 
 
-# 3. 侧边栏控制 (已简化为纯阿里云模式)
+
+# 3. 侧边栏控制 (防御性初始化)
 # ==========================================
 with st.sidebar:
     st.markdown("## 🏗️ 系统控制台")
     
-    # 彻底移除 toggle 切换，直接固定阿里云参数
-    env_type = True  # 强制设为 True，方便后面函数逻辑调用
-    
+    env_type = True  
     default_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-    default_key = ""
+    
+    # 1. 这里设为空是没问题的
+    default_key = "" 
     preset_models = ["qwen-plus","qwen-long","qwen-turbo", "qwen-max", "自定义"]
 
-    # 保留输入框，方便你临时更换 Key 或模型
     local_url = st.text_input("🔗 接口地址", value=default_url)
-    local_key = st.text_input("🔑 API Key", value=default_key, type="password")
-    selected_model = st.selectbox("🤖 选择/输入模型", options=preset_models)
+    # 2. 用户会在这里输入 Key
+    local_key = st.text_input("🔑 API Key", value=default_key, type="password", placeholder="请输入阿里云 API Key...")
     
+    selected_model = st.selectbox("🤖 选择/输入模型", options=preset_models)
     model_id = st.text_input("✍️ 模型 ID", value=selected_model) if selected_model == "自定义" else selected_model
     
-    # 初始化 OpenAI 客户端
-    client = OpenAI(api_key=local_key, base_url=local_url)
-    
-    st.info("💡 当前已锁定为阿里云计大模型。")
+    # --- 关键修改点 ---
+    # 3. 只有当 local_key 不为空时，才执行 OpenAI() 初始化
+    if local_key.strip():
+        client = OpenAI(api_key=local_key, base_url=local_url)
+    else:
+        client = None # 如果没填，client 就是空的
+        st.warning("⚠️ 请在上方输入 API Key 以启用研判功能")
 
 # ==========================================
 # 4. 主业务流程
