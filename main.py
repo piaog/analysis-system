@@ -228,25 +228,38 @@ with st.sidebar:
         client = None # 如果没填，client 就是空的
         st.warning("⚠️ 请在上方输入 API Key 以启用研判功能")
 
+
 # ==========================================
 # 4. 主业务流程
 # ==========================================
 st.markdown('<h1 class="main-title">🏢数据智能分析平台</h1>', unsafe_allow_html=True)
 uploaded_file = st.file_uploader("📤 载入数据文件", type=["xlsx", "xls", "csv"], label_visibility="collapsed")
 
+# --- 1. 先定义带缓存的函数（建议放在代码前面的工具函数区，或者就在这里） ---
+@st.cache_data(show_spinner="🚀 正在加速读取大数据集...")
+def load_data(file):
+    # 这个函数会把结果存在内存里，只要文件名不变，就不会重复读盘
+    if file.name.endswith('.csv'):
+        return pd.read_csv(file)
+    return pd.read_excel(file)
+
+# --- 2. 修改后的主流程 ---
 if uploaded_file:
+    # 保持你原有的文件切换重置逻辑
     if "current_filename" not in st.session_state or st.session_state.current_filename != uploaded_file.name:
         st.session_state.selected_cols, st.session_state.last_analysis, st.session_state.report_list = [], "", []
         st.session_state.current_filename = uploaded_file.name
         st.rerun()
 
     try:
-        df_raw = pd.read_csv(uploaded_file) if uploaded_file.name.endswith('.csv') else pd.read_excel(uploaded_file)
+        # 【核心改动】：不要直接 pd.read，改为调用 load_data 函数
+        df_raw = load_data(uploaded_file)
+        
         all_cols = df_raw.columns.tolist()
-        if not st.session_state.get("selected_cols"): st.session_state.selected_cols = all_cols
+        if not st.session_state.get("selected_cols"): 
+            st.session_state.selected_cols = all_cols
 
         tab1, tab2 = st.tabs(["🔍 数据筛选与预览", "📊 报表中心与专家研判"])
-
         with tab1:
             with st.expander("🛠️ 字段管理", expanded=True):
                 with st.form("field_config_form"):
