@@ -28,6 +28,16 @@ hide_streamlit_style = """
             """
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
 
+@st.cache_data # 告诉系统：如果文件名没变，直接从缓存读数据，别重新加载
+def load_data(file):
+    if file.name.endswith('.csv'):
+        return pd.read_csv(file)
+    return pd.read_excel(file)
+
+# 在主业务流程中使用
+if uploaded_file:
+    df_raw = load_data(uploaded_file)
+    
 st.markdown("""
     <style>
     .main { background-color: #f8fafc; }
