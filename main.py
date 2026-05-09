@@ -18,6 +18,16 @@ from docx.oxml.ns import qn
 # ==========================================
 st.set_page_config(page_title="飘哥的智能分析平台", layout="wide", initial_sidebar_state="expanded")
 
+# 隐藏右上角 GitHub 链接及底部水印
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 st.markdown("""
     <style>
     .main { background-color: #f8fafc; }
@@ -200,8 +210,8 @@ with st.sidebar:
     env_type = True  # 强制设为 True，方便后面函数逻辑调用
     
     default_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-    default_key = "sk-819cb281e7c44980a4115f7698b46a1f"
-    preset_models = ["qwen-long","qwen-turbo", "qwen-plus", "qwen-max", "自定义"]
+    default_key = ""
+    preset_models = ["qwen-plus","qwen-long","qwen-turbo", "qwen-max", "自定义"]
 
     # 保留输入框，方便你临时更换 Key 或模型
     local_url = st.text_input("🔗 接口地址", value=default_url)
@@ -213,12 +223,12 @@ with st.sidebar:
     # 初始化 OpenAI 客户端
     client = OpenAI(api_key=local_key, base_url=local_url)
     
-    st.info("💡 当前已锁定为阿里云计算引擎，确保外网访问稳定性。")
+    st.info("💡 当前已锁定为阿里云计大模型。")
 
 # ==========================================
 # 4. 主业务流程
 # ==========================================
-st.markdown('<h1 class="main-title">🏢 飘哥的数据智能分析平台</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="main-title">🏢数据智能分析平台</h1>', unsafe_allow_html=True)
 uploaded_file = st.file_uploader("📤 载入数据文件", type=["xlsx", "xls", "csv"], label_visibility="collapsed")
 
 if uploaded_file:
