@@ -299,8 +299,8 @@ if uploaded_file:
             s_c1, s_c2, _ = st.columns([1, 1, 2])
             s_c1.metric("筛选后行数", len(df_final))
             s_c2.metric("覆盖比例", f"{(len(df_final)/len(df_raw)*100):.1f}%")
-            st.markdown('<div class="table-title">📋 数据样例前50条展示</div>', unsafe_allow_html=True)
-            st.dataframe(df_final[display_cols].head(50), use_container_width=True)
+            st.markdown('<div class="table-title">📋 数据样例前10条展示</div>', unsafe_allow_html=True)
+            st.dataframe(df_final[display_cols].head(10), use_container_width=True)
 
         with tab2:
             current_cols = st.session_state.selected_cols
