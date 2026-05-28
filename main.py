@@ -370,8 +370,8 @@ if uploaded_file:
                     # --- 统一渲染逻辑 ---
                     if current_fig and hasattr(current_fig, "update_layout"):
                         current_fig.update_layout(template="plotly_white", title="", font_color="black", paper_bgcolor='white', coloraxis_showscale=False, legend_font_color="black")
-                        current_fig.update_xaxes(title_font_color="black", tickfont_color="black", gridcolor="#f0f0f0", showline=True, linecolor='#e5e7eb')
-                        current_fig.update_yaxes(title_font_color="black", tickfont_color="black", gridcolor="#f0f0f0", showline=True, linecolor='#e5e7eb')
+                        current_fig.update_xaxes(title_font_color="black",tickformat=',d', tickfont_color="black", gridcolor="#f0f0f0", showline=True, linecolor='#e5e7eb')
+                        current_fig.update_yaxes(title_font_color="black",tickformat=',d', tickfont_color="black", gridcolor="#f0f0f0", showline=True, linecolor='#e5e7eb')
                         if chart_type == "饼图": 
                             current_fig.update_traces(textfont_color="black", textinfo='label+percent', insidetextorientation='horizontal')
                             current_fig.update_layout(legend_x=1, legend_y=0.5, legend_xanchor="left", margin=dict(r=10, l=10))
