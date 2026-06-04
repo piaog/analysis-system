@@ -210,7 +210,7 @@ with st.sidebar:
     default_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
     
     # 1. 这里设为空是没问题的
-    default_key = "" 
+    default_key = "sk-bab7847340494cf0a5d321e47ec3c47a" 
     preset_models = ["qwen-plus","qwen-long","qwen-turbo", "qwen-max", "自定义"]
 
     local_url = st.text_input("🔗 接口地址", value=default_url)
